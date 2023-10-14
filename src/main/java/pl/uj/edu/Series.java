@@ -7,7 +7,7 @@ public class Series {
     private final String colName;
     private final String colType;
 
-    private final ArrayList<Object> values;
+    private ArrayList<Object> values;
     public Series(String coLName, String colType) {
         this.values = new ArrayList<>();
         this.colName = coLName;
@@ -35,7 +35,6 @@ public class Series {
     }
 
     public void setValues(ArrayList<Object> values) {
-        this.values.clear();
-        this.values.addAll(values);
+        this.values = values;
     }
 }

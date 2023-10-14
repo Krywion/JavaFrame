@@ -104,14 +104,29 @@ public class DataFrame {
         this.get(colName).getValues().set(i, value);
     }
 
+    public DataFrame iloc(int from, int to) {
+        DataFrame df = new DataFrame(new String[]{}, new String[]{});
+
+        // copy columns
+        for(Series s : columns) {
+            df.addColumn(s.getColName(), s.getColType());
+            for(int i = from; i < to; i++) {
+                df.get(s.getColName()).addValue(s.getValues().get(i));
+            }
+        }
+
+        return df;
+    }
+
     public void printDataFrame() {
         for(Series s : this.columns) {
             System.out.print(s.getColName() + " ");
         }
         System.out.println();
         for(int i = 0; i < this.size(); i++) {
+            System.out.print("[INDEX = " + i + "] = ");
             for(Series s : this.columns) {
-                System.out.print("[INDEX] = " + i + ";" +  s.getValues().get(i) + " ");
+                System.out.print(s.getValues().get(i) + " ");
             }
             System.out.println();
         }
