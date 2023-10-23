@@ -16,66 +16,116 @@ public class IntegerValue extends Value{
     }
 
     @Override
-    public Value add(Value v) {
-        IntegerValue other = (IntegerValue) v;
+    public void print() {
+        System.out.println(this.toString());
+    }
+
+    @Override
+    public IntegerValue add(Value v) {
         IntegerValue result = new IntegerValue();
-        result.value = (Integer) this.value + (Integer) other.value;
+        if(v.value instanceof Integer) {
+            result.value = (Integer) this.value + (Integer) v.value;
+        } else if(v.value instanceof Double) {
+            result.value = (Integer) this.value + Double.valueOf(v.value.toString()).intValue();
+        } else {
+            throw new IllegalArgumentException("Cannot add IntegerValue and " + v.value.getClass().getName());
+        }
         return result;
     }
     @Override
-    public Value sub(Value v) {
-        IntegerValue other = (IntegerValue) v;
+    public IntegerValue sub(Value v) {
         IntegerValue result = new IntegerValue();
-        result.value = (Integer) this.value - (Integer) other.value;
+        if(v.value instanceof Integer) {
+            result.value = (Integer) this.value - (Integer) v.value;
+        } else if(v.value instanceof Double) {
+            result.value = (Integer) this.value - Double.valueOf(v.value.toString()).intValue();
+        } else {
+            throw new IllegalArgumentException("Cannot sub IntegerValue and " + v.value.getClass().getName());
+        }
         return result;
     }
 
     @Override
-    public Value mul(Value v) {
-        IntegerValue other = (IntegerValue) v;
+    public IntegerValue mul(Value v) {
         IntegerValue result = new IntegerValue();
-        result.value = (Integer) this.value * (Integer) other.value;
+        if(v.value instanceof Integer) {
+            result.value = (Integer) this.value * (Integer) v.value;
+        } else if(v.value instanceof Double) {
+            result.value = (Integer) this.value * Double.valueOf(v.value.toString()).intValue();
+        } else {
+            throw new IllegalArgumentException("Cannot mul IntegerValue and " + v.value.getClass().getName());
+        }
         return result;
     }
 
     @Override
-    public Value div(Value v) {
-        IntegerValue other = (IntegerValue) v;
+    public IntegerValue div(Value v) {
         IntegerValue result = new IntegerValue();
-        result.value = (Integer) this.value / (Integer) other.value;
+        if(v.value instanceof Integer) {
+            result.value = (Integer) this.value / (Integer) v.value;
+        } else if(v.value instanceof Double) {
+            result.value = (Integer) this.value / Double.valueOf(v.value.toString()).intValue();
+        } else {
+            throw new IllegalArgumentException("Cannot div IntegerValue and " + v.value.getClass().getName());
+        }
         return result;
     }
 
     @Override
-    public Value pow(Value v) {
-        IntegerValue other = (IntegerValue) v;
+    public IntegerValue pow(Value v) {
         IntegerValue result = new IntegerValue();
-        result.value = Math.pow((Integer) this.value, (Integer) other.value);
+        if(v.value instanceof Integer) {
+            result.value = Math.pow((Integer) this.value, (Integer) v.value);
+        } else if(v.value instanceof Double) {
+            result.value = Math.pow((Integer) this.value, Double.valueOf(v.value.toString()).intValue());
+        } else {
+            throw new IllegalArgumentException("Cannot pow IntegerValue and " + v.value.getClass().getName());
+        }
         return result;
     }
 
     @Override
     public boolean eq(Value v) {
-        IntegerValue other = (IntegerValue) v;
-        return this.value == other.value;
+        if(v.value instanceof Integer) {
+            return this.value == v.value;
+        } else if(v.value instanceof Double) {
+            return this.value == (Integer) Double.valueOf(v.value.toString()).intValue();
+        } else {
+            throw new IllegalArgumentException("Cannot eq IntegerValue and " + v.value.getClass().getName());
+        }
     }
 
     @Override
     public boolean lte(Value v) {
-        IntegerValue other = (IntegerValue) v;
-        return (Integer) this.value <= (Integer) other.value;
+        if(v.value instanceof Integer) {
+            return (Integer) this.value <= (Integer) v.value;
+        } else if(v.value instanceof Double) {
+            return (Integer) this.value <= (Integer) Double.valueOf(v.value.toString()).intValue();
+        } else {
+            throw new IllegalArgumentException("Cannot lte IntegerValue and " + v.value.getClass().getName());
+        }
     }
 
     @Override
     public boolean gte(Value v) {
-        IntegerValue other = (IntegerValue) v;
-        return (Integer) this.value >= (Integer) other.value;
+        if(v.value instanceof Integer) {
+            return (Integer) this.value >= (Integer) v.value;
+        } else if(v.value instanceof Double) {
+            return (Integer) this.value >= (Integer) Double.valueOf(v.value.toString()).intValue();
+        } else {
+            throw new IllegalArgumentException("Cannot gte IntegerValue and " + v.value.getClass().getName());
+        }
     }
 
     @Override
     public boolean neq(Value v) {
-        IntegerValue other = (IntegerValue) v;
-        return this.value != other.value;
+        if(v.value instanceof Integer) {
+            return this.value != v.value;
+        } else if(v.value instanceof Double) {
+            return this.value != (Integer) Double.valueOf(v.value.toString()).intValue();
+        } else {
+            throw new IllegalArgumentException("Cannot neq IntegerValue and " + v.value.getClass().getName());
+        }
     }
 
     @Override

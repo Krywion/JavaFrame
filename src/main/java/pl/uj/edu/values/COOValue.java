@@ -22,8 +22,14 @@ public final class COOValue extends Value{
         return this.index;
     }
 
+    @Override
     public String toString() {
         return this.value.toString();
+    }
+
+    @Override
+    public void print() {
+        System.out.println(this.toString());
     }
 
     @Override
