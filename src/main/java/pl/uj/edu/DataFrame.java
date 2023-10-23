@@ -1,17 +1,51 @@
 package pl.uj.edu;
 
 
+import java.io.*;
 import java.util.ArrayList;
 
 public class DataFrame {
 
-    private final ArrayList<Series> columns;
+    protected ArrayList<Series> columns;
 
     public DataFrame(String[] colNames, String[] dtypes) {
         this.columns = new ArrayList<>();
         for(int i = 0; i < colNames.length; i++) {
             this.columns.add(new Series(colNames[i], dtypes[i]));
         }
+    }
+
+    public DataFrame(String fileName, String[] dtypes, Object header) throws IOException {
+        FileInputStream fstream;
+        BufferedReader br = null;
+        try {
+            fstream = new FileInputStream(fileName);
+            br = new BufferedReader(new InputStreamReader(fstream));
+        } catch (FileNotFoundException e) {
+            System.err.println("Error while opening file: " + e.getMessage());
+        }
+
+        String strLine;
+        if(header == null) {
+            strLine = br.readLine();
+        } else {
+            strLine = (String) header;
+        }
+        String[] colNames = strLine.split(",");
+        this.columns = new ArrayList<>();
+        for(int i = 0; i < colNames.length; i++) {
+            this.columns.add(new Series(colNames[i], dtypes[i]));
+        }
+
+        while(true) {
+            strLine = br.readLine();
+            if (strLine == null) {
+                break;
+            }
+            String[] row = strLine.split(",");
+            this.addRow(row, true);
+        }
+
     }
 
     public int size() {
@@ -126,9 +160,38 @@ public class DataFrame {
         for(int i = 0; i < this.size(); i++) {
             System.out.print("[INDEX = " + i + "] = ");
             for(Series s : this.columns) {
-                System.out.print(s.getValues().get(i) + " ");
+                try {
+                    System.out.print(s.getValues().get(i) + " ");
+                } catch (Exception IndexOutOfBoundsException) {
+                    System.out.print("");
+                }
             }
             System.out.println();
         }
+    }
+
+
+    protected String[] getColNames() {
+        String[] colNames = new String[this.columns.size()];
+        for(int i = 0; i < this.columns.size(); i++) {
+            colNames[i] = this.columns.get(i).getColName();
+        }
+        return colNames;
+    }
+
+    protected String[] getDtypes() {
+        String[] dtypes = new String[this.columns.size()];
+        for(int i = 0; i < this.columns.size(); i++) {
+            dtypes[i] = this.columns.get(i).getColType();
+        }
+        return dtypes;
+    }
+
+    protected String[] getRow(int i) {
+        String[] row = new String[this.columns.size()];
+        for(int j = 0; j < this.columns.size(); j++) {
+            row[j] = this.columns.get(j).getValues().get(i).toString();
+        }
+        return row;
     }
 }
