@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
-// TODO: Refactor the add, sub methods;
 public class DateTimeValue extends Value {
     private LocalDateTime value;
 
@@ -29,27 +28,15 @@ public class DateTimeValue extends Value {
     }
 
     @Override
-    public DateTimeValue add(Value other) {
-        if (other instanceof DateTimeValue) {
-            LocalDateTime result = this.value.plusSeconds(((DateTimeValue) other).value.getSecond());
-            DateTimeValue dateTimeValue = new DateTimeValue();
-            dateTimeValue.value = result;
-            return dateTimeValue;
-        } else {
-            throw new IllegalArgumentException("Cannot add DateTimeValue and " + other.getClass().getName());
-        }
+    protected DateTimeValue add(Value other) {
+        // DateTimeValue add doesn't make sense, so we return null
+       return null;
     }
 
     @Override
-    public DateTimeValue sub(Value other) {
-        if (other instanceof DateTimeValue) {
-            LocalDateTime result = this.value.minusSeconds(((DateTimeValue) other).value.getSecond());
-            DateTimeValue dateTimeValue = new DateTimeValue();
-            dateTimeValue.value = result;
-            return dateTimeValue;
-        } else {
-            throw new IllegalArgumentException("Cannot sub DateTimeValue and " + other.getClass().getName());
-        }
+    protected DateTimeValue sub(Value other) {
+        // DateTimeValue sub doesn't make sense, so we return null
+        return null;
     }
 
     @Override

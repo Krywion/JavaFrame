@@ -4,7 +4,7 @@ public final class COOValue extends Value{
 
     private final int index;
 
-    public COOValue(Object value, int index) {
+    public COOValue(Value value, int index) {
         this.value = value;
         this.index = index;
     }

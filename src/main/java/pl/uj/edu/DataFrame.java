@@ -1,6 +1,8 @@
 package pl.uj.edu;
 
 
+import pl.uj.edu.values.Value;
+
 import java.io.*;
 import java.util.ArrayList;
 
@@ -8,14 +10,14 @@ public class DataFrame {
 
     protected ArrayList<Series> columns;
 
-    public DataFrame(String[] colNames, String[] dtypes) {
+    public DataFrame(String[] colNames, Class<? extends Value>[] dtypes) {
         this.columns = new ArrayList<>();
         for(int i = 0; i < colNames.length; i++) {
             this.columns.add(new Series(colNames[i], dtypes[i]));
         }
     }
 
-    public DataFrame(String fileName, String[] dtypes, Object header) throws IOException {
+    public DataFrame(String fileName, Class<? extends Value>[] dtypes, Object header) throws IOException {
         FileInputStream fstream;
         BufferedReader br = null;
         try {
@@ -63,7 +65,7 @@ public class DataFrame {
 
     public DataFrame get(String[] cols, boolean copy) {
         // new DataFrame
-        DataFrame newDataFrame = new DataFrame(new String[]{}, new String[]{});
+        DataFrame newDataFrame = new DataFrame(new String[]{}, new Class[]{});
 
         // copy columns
         for (String col : cols) {
@@ -84,7 +86,7 @@ public class DataFrame {
     }
 
 
-    public void addColumn(String colName, String dtype) {
+    public void addColumn(String colName, Class<? extends Value> dtype) {
         this.columns.add(new Series(colName, dtype));
     }
 
@@ -99,14 +101,20 @@ public class DataFrame {
        // add row to this DataFrame
        if(inplace) {
            for(int i = 0; i < row.length; i++) {
-               this.columns.get(i).addValue(row[i]);
+               Value v = null;
+               try {
+                   v = this.columns.get(i).getColType().newInstance().create(row[i]);
+               } catch (InstantiationException | IllegalAccessException e) {
+                   e.printStackTrace();
+               }
+               this.columns.get(i).addValue(v);
            }
            return this;
        }
 
        // add row to new DataFrame
        else {
-           DataFrame df = new DataFrame(new String[]{}, new String[]{});
+           DataFrame df = new DataFrame(new String[]{}, new Class[]{});
 
            // copy columns
            for(Series s : columns) {
@@ -116,14 +124,20 @@ public class DataFrame {
 
            // add row
            for(int i = 0; i < row.length; i++) {
-               df.get(columns.get(i).getColName()).addValue(row[i]);
+               Value v = null;
+                try {
+                     v = this.columns.get(i).getColType().newInstance().create(row[i]);
+                } catch (InstantiationException | IllegalAccessException e) {
+                     e.printStackTrace();
+                }
+               df.get(columns.get(i).getColName()).addValue(v);
            }
            return df;
        }
     }
 
     public DataFrame iloc(int i) {
-        DataFrame df = new DataFrame(new String[]{}, new String[]{});
+        DataFrame df = new DataFrame(new String[]{}, new Class[]{});
 
         // copy columns
         for(Series s : columns) {
@@ -134,12 +148,12 @@ public class DataFrame {
         return df;
     }
 
-    public void ilocSet(int i, String colName, Object value) {
+    public void ilocSet(int i, String colName, Value value) {
         this.get(colName).getValues().set(i, value);
     }
 
     public DataFrame iloc(int from, int to) {
-        DataFrame df = new DataFrame(new String[]{}, new String[]{});
+        DataFrame df = new DataFrame(new String[]{}, new Class[]{});
 
         // copy columns
         for(Series s : columns) {
@@ -179,8 +193,8 @@ public class DataFrame {
         return colNames;
     }
 
-    protected String[] getDtypes() {
-        String[] dtypes = new String[this.columns.size()];
+    protected Class<? extends Value>[] getDtypes() {
+        Class<? extends Value>[] dtypes = (Class<? extends Value>[]) new Class<?>[this.columns.size()];
         for(int i = 0; i < this.columns.size(); i++) {
             dtypes[i] = this.columns.get(i).getColType();
         }

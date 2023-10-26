@@ -87,9 +87,9 @@ public class IntegerValue extends Value{
     @Override
     public boolean eq(Value v) {
         if(v.value instanceof Integer) {
-            return this.value == v.value;
+            return this.value.equals(v.value);
         } else if(v.value instanceof Double) {
-            return this.value == (Integer) Double.valueOf(v.value.toString()).intValue();
+            return this.value.equals(Double.valueOf(v.value.toString()).intValue());
         } else {
             throw new IllegalArgumentException("Cannot eq IntegerValue and " + v.value.getClass().getName());
         }

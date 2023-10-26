@@ -1,17 +1,19 @@
 package pl.uj.edu;
 
 import pl.uj.edu.values.COOValue;
+import pl.uj.edu.values.StringValue;
+import pl.uj.edu.values.Value;
 
 import java.io.*;
 
 public class SparseDataFrame extends DataFrame {
-    private final Object hide;
-    public SparseDataFrame(String[] colNames, String[] dtypes, Object hide) {
+    private final Value hide;
+    public SparseDataFrame(String[] colNames, Class<? extends Value>[] dtypes, Value hide) {
         super(colNames, dtypes);
         this.hide = hide;
     }
 
-    public SparseDataFrame(DataFrame df, Object hide) {
+    public SparseDataFrame(DataFrame df, Value hide) {
         super(df.getColNames(), df.getDtypes());
         this.hide = hide;
         for (int i = 0; i < df.size(); i++) {
@@ -20,7 +22,7 @@ public class SparseDataFrame extends DataFrame {
     }
 
 
-    public SparseDataFrame(String fileName, String[] dtypes, Object hide, Object header) throws IOException {
+    public SparseDataFrame(String fileName, Class<? extends Value>[] dtypes, Value hide, Object header) throws IOException {
         super(new String[]{}, dtypes);
         this.hide = hide;
         FileInputStream fstream;
@@ -65,10 +67,19 @@ public class SparseDataFrame extends DataFrame {
         if(inplace) {
 
             for(int i = 0; i < row.length; i++) {
-                if(!row[i].equals(hide)) {
-                    this.columns.get(i).addValue(new COOValue(row[i], index-i));
+                Value v;
+                try {
+                    v = this.columns.get(i).getColType().newInstance().create(row[i]);
+                } catch (InstantiationException e) {
+                    throw new RuntimeException(e);
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
+                if(!(v.eq(this.hide))) {
+                    this.columns.get(i).addValue(new COOValue(v, index-i));
                 } else {
-                    this.columns.get(i).addValue("");
+                    StringValue stringValue = new StringValue().create("");
+                    this.columns.get(i).addValue(stringValue);
                 }
                 index++;
 
@@ -78,7 +89,7 @@ public class SparseDataFrame extends DataFrame {
 
         // add row to new SprarseDataFrame
         else {
-            SparseDataFrame sdf = new SparseDataFrame(new String[]{}, new String[]{}, this.hide);
+            SparseDataFrame sdf = new SparseDataFrame(new String[]{}, new Class[]{}, this.hide);
 
             // copy columns
             for(Series s : columns) {
@@ -88,8 +99,17 @@ public class SparseDataFrame extends DataFrame {
 
             // add row
             for(int i = 0; i < row.length; i++) {
-                if(!row[i].equals(hide)) {
-                    sdf.get(columns.get(i).getColName()).addValue(new COOValue(row[i], i));
+                Value v;
+                try {
+                    v = this.columns.get(i).getColType().newInstance().create(row[i]);
+                } catch (InstantiationException e) {
+                    throw new RuntimeException(e);
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
+
+                if(!v.eq(this.hide)) {
+                    sdf.get(columns.get(i).getColName()).addValue(new COOValue(v, i));
                 }
             }
             return sdf;
